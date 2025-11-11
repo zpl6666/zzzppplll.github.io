@@ -1,40 +1,85 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="">
 <head>
-  <meta charset="utf-8">
-  
-  
-  <title>学习资料</title>
+    <meta charset="utf-8">
+    <title>学习资料 - Vue</title>
 
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+    <link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/fork-awesome@1.2.0/css/fork-awesome.min.css">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <style>
+        /* 简单布局，若已有 /css/style.css 可移除 */
+        .contain { max-width: 980px; margin: 0 auto; padding: 16px; }
+        header { display:flex; justify-content:space-between; align-items:center; }
+        nav a { margin-left:12px; color:#1976d2; text-decoration:none; }
+        .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px; margin-top:16px; }
+        .card { border:1px solid #eee; padding:8px; border-radius:6px; background:#fff; }
+        .thumb { width:100%; height:120px; object-fit:cover; border-radius:4px; }
+        .title { margin-top:8px; font-size:14px; }
+    </style>
 </head>
-
 <body>
-<div class="contain">
+<div id="app" class="contain">
     <header>
-        <h1>学习资料</h1>
+        <h1>{{ title }}</h1>
+        <nav>
+            <a :href="nav[0].href">{{ nav[0].label }}</a>
+            <a :href="nav[1].href">{{ nav[1].label }}</a>
+        </nav>
     </header>
 
+    <section class="grid">
+        <article v-for="r in resources" :key="r.id" class="card">
+            <a
+                    :href="r.url"
+                    data-fancybox="gallery"
+                    class="fancybox"
+                    :data-caption="r.title"
+                    target="_blank"
+                    rel="noopener"
+            >
+                <img :src="r.thumb" :alt="r.title" class="thumb" />
+            </a>
+            <div class="title">{{ r.title }}</div>
+        </article>
+    </section>
+</div>
 
-
+<!-- 先加载 Vue (global build)，再加载 jQuery 与 Fancybox，最后是应用逻辑 -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <script src="/js/jquery-3.6.4.min.js"></script>
-
-
-
-  
 <script src="/fancybox/jquery.fancybox.min.js"></script>
 
+<script>
+    const { createApp } = Vue;
 
-
-
-<script src="/js/script.js"></script>
-
-
-
-
-
-  </div>
+    createApp({
+        data() {
+            return {
+                title: "学习资料",
+                nav: [
+                    { label: "首页", href: "/about" },
+                    { label: "关于", href: "/about" }
+                ],
+                resources: [
+                    // 示例数据，替换为真实路径
+                    { id: 1, title: "资料 A", thumb: "/images/thumb1.jpg", url: "/images/large1.jpg" },
+                    { id: 2, title: "资料 B", thumb: "/images/thumb2.jpg", url: "/images/large2.jpg" },
+                    { id: 3, title: "资料 C", thumb: "/images/thumb3.jpg", url: "/images/large3.jpg" }
+                ]
+            };
+        },
+        mounted() {
+            // 初始化 Fancybox（确保 jQuery 已加载）
+            if (window.jQuery && typeof jQuery.fancybox === "function") {
+                jQuery('[data-fancybox="gallery"]').fancybox({
+                    loop: true,
+                    buttons: ["zoom", "close"]
+                });
+            }
+        }
+    }).mount('#app');
+</script>
 </body>
 </html>
